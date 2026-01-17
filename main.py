@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request
+import json
+from flask import Flask, request, Response
 from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
@@ -19,11 +20,12 @@ DATABASE = {
 }
 
 # -----------------------------
-# Health Check (IMPORTANT)
+# Health Check (Railway Needs This)
 # -----------------------------
 @app.route("/")
 def health():
     return "OK", 200
+
 
 # -----------------------------
 # WhatsApp Webhook
@@ -32,39 +34,81 @@ def health():
 def whatsapp_bot():
 
     incoming_msg = request.values.get("Body", "").lower().strip()
-    response = MessagingResponse()
-    msg = response.message()
 
-    if incoming_msg == "hi":
-        msg.body(
-            "📚 Welcome to Book Bot\n\n"
-            "1️⃣ Fetch Books\n"
-            "2️⃣ Fetch Authors\n"
-            "3️⃣ Fetch Book Prices"
-        )
+    # -----------------------------
+    # MENU WITH BUTTONS
+    # -----------------------------
+    if incoming_msg in ["hi", "menu", "hello"]:
 
-    elif incoming_msg == "1":
-        reply = "📚 Books:\n"
+        payload = {
+            "messaging_product": "whatsapp",
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {
+                    "text": "📚 *Welcome to Book Bot*\n\nChoose an option:"
+                },
+                "action": {
+                    "buttons": [
+                        {
+                            "type": "reply",
+                            "reply": {"id": "books", "title": "📚 Fetch Books"}
+                        },
+                        {
+                            "type": "reply",
+                            "reply": {"id": "authors", "title": "✍ Fetch Authors"}
+                        },
+                        {
+                            "type": "reply",
+                            "reply": {"id": "prices", "title": "💰 Book Prices"}
+                        }
+                    ]
+                }
+            }
+        }
+
+        return Response(json.dumps(payload), mimetype="application/json")
+
+    # -----------------------------
+    # BOOK LIST
+    # -----------------------------
+    elif incoming_msg == "books":
+        reply = "📚 *Available Books*\n\n"
         for book in DATABASE["books"]:
             reply += f"- {book['name']} by {book['author']}\n"
-        msg.body(reply)
+        reply += "\nSend *menu* to go back."
 
-    elif incoming_msg == "2":
-        reply = "✍ Authors:\n"
+    # -----------------------------
+    # AUTHORS LIST
+    # -----------------------------
+    elif incoming_msg == "authors":
+        reply = "✍ *Authors*\n\n"
         for author in DATABASE["authors"]:
             reply += f"- {author}\n"
-        msg.body(reply)
+        reply += "\nSend *menu* to go back."
 
-    elif incoming_msg == "3":
-        reply = "💰 Prices:\n"
+    # -----------------------------
+    # PRICES LIST
+    # -----------------------------
+    elif incoming_msg == "prices":
+        reply = "💰 *Book Prices*\n\n"
         for book in DATABASE["books"]:
             reply += f"- {book['name']}: ₹{book['price']}\n"
-        msg.body(reply)
+        reply += "\nSend *menu* to go back."
 
+    # -----------------------------
+    # FALLBACK
+    # -----------------------------
     else:
-        msg.body("Send *hi* to see menu.")
+        reply = "❓ I didn’t understand that.\n\nSend *hi* to open menu."
 
+    # -----------------------------
+    # TEXT RESPONSE (Non-button replies)
+    # -----------------------------
+    response = MessagingResponse()
+    response.message(reply)
     return str(response)
+
 
 # -----------------------------
 # Railway Entry Point
