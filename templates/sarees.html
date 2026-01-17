@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Saree Catalog</title>
+
+  <style>
+    body { font-family: Arial; margin: 20px; background: #fafafa; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #f3f3f3; }
+    input { padding: 6px; margin: 4px; width: 120px; }
+    button { padding: 6px 10px; cursor: pointer; }
+    img { border-radius: 4px; }
+    .box { border: 1px solid #ddd; padding: 12px; margin-bottom: 15px; background: #fff; }
+  </style>
+</head>
+
+<body>
+
+<h2>🛍️ Saree Catalog (Admin CRUD)</h2>
+
+<!-- ADD NEW SAREE -->
+<div class="box">
+  <h3>Add Saree</h3>
+  <form method="POST" action="/sarees/add">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="text" name="fabric" placeholder="Fabric" required>
+    <input type="text" name="color" placeholder="Color" required>
+    <input type="number" name="price" placeholder="Price" step="0.01" required>
+    <input type="number" name="stock" placeholder="Stock" required>
+    <input type="url" name="image_url" placeholder="Image URL">
+    <button type="submit">Add</button>
+  </form>
+</div>
+
+<!-- LIST ALL SAREES -->
+<h3>All Sarees</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Fabric</th>
+      <th>Color</th>
+      <th>Price</th>
+      <th>Stock</th>
+      <th>Image</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for s in sarees %}
+    <tr>
+      <td>{{ s.name }}</td>
+      <td>{{ s.fabric }}</td>
+      <td>{{ s.color }}</td>
+      <td>{{ s.price }}</td>
+      <td>{{ s.stock }}</td>
+
+      <!-- IMAGE PREVIEW -->
+      <td>
+        {% if s.image_url %}
+          <img src="{{ s.image_url }}" width="80">
+        {% else %}
+          No Image
+        {% endif %}
+      </td>
+
+      <td>
+        <!-- DELETE -->
+        <form method="POST" action="/sarees/delete/{{ s.id }}" style="display:inline;">
+          <button type="submit">Delete</button>
+        </form>
+
+        <!-- UPDATE -->
+        <form method="POST" action="/sarees/update/{{ s.id }}" style="display:inline;">
+          <input type="text" name="name" value="{{ s.name }}" required>
+          <input type="text" name="fabric" value="{{ s.fabric }}" required>
+          <input type="text" name="color" value="{{ s.color }}" required>
+          <input type="number" step="0.01" name="price" value="{{ s.price }}" required>
+          <input type="number" name="stock" value="{{ s.stock }}" required>
+          <input type="url" name="image_url" value="{{ s.image_url }}">
+          <button type="submit">Update</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>

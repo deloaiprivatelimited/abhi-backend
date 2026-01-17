@@ -1,0 +1,5 @@
+retailer_id,name,description,availability,condition,price,currency,image_url,url,brand
+SAREE001,Banarasi Silk Saree,Pure Banarasi silk saree with golden zari,in stock,new,450000,INR,https://example.com/images/banarasi.jpg,https://yourstore.com/sarees/1,Abhi Sarees
+SAREE002,Kanjeevaram Saree,Traditional Kanjeevaram saree in red and gold,in stock,new,620000,INR,https://example.com/images/kanjeevaram.jpg,https://yourstore.com/sarees/2,Abhi Sarees
+SAREE003,Chiffon Party Saree,Lightweight chiffon saree perfect for parties,in stock,new,280000,INR,https://example.com/images/chiffon.jpg,https://yourstore.com/sarees/3,Abhi Sarees
+SAREE004,Cotton Daily Wear Saree,Comfortable cotton saree for daily wear,out of stock,new,150000,INR,https://example.com/images/cotton.jpg,https://yourstore.com/sarees/4,Abhi Sarees
